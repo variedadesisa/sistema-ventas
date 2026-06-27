@@ -54,7 +54,7 @@
 }
 
 *{box-sizing:border-box;}
-html,body{margin:0;padding:0;}
+html,body{margin:0;padding:0;overflow-x:hidden;}
 body{
   font-family:'Inter', system-ui, sans-serif;
   background:var(--papel);
@@ -107,7 +107,7 @@ h1,h2,h3{font-family:'Sora', system-ui, sans-serif; margin:0; letter-spacing:-0.
 }
 .nav-item-config:hover{background:var(--tinta-suave); color:#fff;}
 
-.contenido{flex:1; padding:32px 40px; max-width:1400px;}
+.contenido{flex:1; padding:32px 40px; max-width:min(1400px, 100%);}
 
 .vista-header{
   display:flex; justify-content:space-between; align-items:flex-end; gap:24px;
@@ -123,7 +123,7 @@ h1,h2,h3{font-family:'Sora', system-ui, sans-serif; margin:0; letter-spacing:-0.
 .buscador{
   display:flex; align-items:center; gap:8px;
   background:var(--papel-card); border:1px solid var(--linea); border-radius:999px;
-  padding:9px 16px; width:340px;
+  padding:9px 16px; width:340px; max-width:100%;
 }
 .buscador-ancho{width:100%; max-width:520px; margin-bottom:20px;}
 .buscador svg{width:16px; height:16px; stroke:var(--texto-suave); flex-shrink:0;}
@@ -351,7 +351,7 @@ h1,h2,h3{font-family:'Sora', system-ui, sans-serif; margin:0; letter-spacing:-0.
 
 /* ---------- TABLAS ---------- */
 .tabla-productos-wrap{
-  background:var(--papel-card); border:1px solid var(--linea); border-radius:var(--radio); overflow-x:auto;
+  background:var(--papel-card); border:1px solid var(--linea); border-radius:var(--radio); overflow-x:auto; max-width:100%;
 }
 .tabla-productos{width:100%; border-collapse:collapse; min-width:480px;}
 .tabla-productos th{
@@ -455,10 +455,10 @@ h1,h2,h3{font-family:'Sora', system-ui, sans-serif; margin:0; letter-spacing:-0.
 /* ---------- MODALES ---------- */
 .modal-overlay, .config-overlay{
   position:fixed; inset:0; background:rgba(17,21,31,.55); display:flex; align-items:center; justify-content:center;
-  z-index:100; padding:20px;
+  z-index:100; padding:20px; overflow-y:auto;
 }
 .modal-box{
-  background:var(--papel-card); border-radius:14px; width:480px; max-width:100%; max-height:88vh;
+  background:var(--papel-card); border-radius:14px; width:480px; max-width:calc(100vw - 32px); max-height:88vh;
   display:flex; flex-direction:column; overflow:hidden;
 }
 .modal-grande{width:600px;}
