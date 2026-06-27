@@ -60,7 +60,6 @@ body{
   background:var(--papel);
   color:var(--texto);
   -webkit-font-smoothing:antialiased;
-  overscroll-behavior-y:contain;
 }
 .hidden{display:none !important;}
 .oculto{display:none !important;}
@@ -71,7 +70,7 @@ h1,h2,h3{font-family:'Sora', system-ui, sans-serif; margin:0; letter-spacing:-0.
 }
 
 /* ---------- LAYOUT ---------- */
-.app{display:flex; min-height:100vh;}
+.app{display:flex; height:100vh; overflow:hidden;}
 
 .sidebar{
   width:220px; flex-shrink:0;
@@ -108,7 +107,7 @@ h1,h2,h3{font-family:'Sora', system-ui, sans-serif; margin:0; letter-spacing:-0.
 }
 .nav-item-config:hover{background:var(--tinta-suave); color:#fff;}
 
-.contenido{flex:1; padding:32px 40px; max-width:min(1400px, 100%); margin-left:220px;}
+.contenido{flex:1; padding:32px 40px; max-width:min(1400px, 100%); margin-left:220px; overflow-y:auto; height:100vh; overscroll-behavior-y:contain;}
 
 .vista-header{
   display:flex; justify-content:space-between; align-items:flex-end; gap:24px;
@@ -599,7 +598,7 @@ h1,h2,h3{font-family:'Sora', system-ui, sans-serif; margin:0; letter-spacing:-0.
   .sidebar-nav{flex-direction:row; flex-shrink:0;}
   .nav-item{white-space:nowrap;}
   .sidebar-footer{display:none;}
-  .contenido{padding:16px; margin-left:0; padding-top:72px;}
+  .contenido{padding:16px; margin-left:0; padding-top:72px; overflow-y:auto; height:100vh; overscroll-behavior-y:contain;}
   .kpis{grid-template-columns:1fr 1fr;}
   .bloque-stats .kpis{grid-template-columns:1fr 1fr;}
   .bloque-stats{padding:16px;}
@@ -4375,11 +4374,15 @@ $('btnBuscarParaEliminar').addEventListener('click', ()=>{
 (function(){
   let ultimoScroll = 0;
   const UMBRAL = 8; // px mínimos para considerar que hubo scroll real
-  window.addEventListener("scroll", function(){
+  const contenido = document.querySelector(".contenido");
+  const scrollEl = () => window.innerWidth <= 680 ? (document.querySelector(".contenido") || window) : window;
+  
+  function onScroll(){
     if(window.innerWidth > 680) return; // solo en móvil
     const sidebar = document.querySelector(".sidebar");
     if(!sidebar) return;
-    const scrollActual = window.scrollY;
+    const el = document.querySelector(".contenido");
+    const scrollActual = el ? el.scrollTop : window.scrollY;
     if(Math.abs(scrollActual - ultimoScroll) < UMBRAL) return;
     if(scrollActual > ultimoScroll && scrollActual > 60){
       // bajando
@@ -4389,7 +4392,18 @@ $('btnBuscarParaEliminar').addEventListener('click', ()=>{
       sidebar.style.transform = "translateY(0)";
     }
     ultimoScroll = scrollActual;
-  }, {passive: true});
+  }
+  
+  // Escuchar scroll tanto en window como en .contenido
+  window.addEventListener("scroll", onScroll, {passive: true});
+  // El listener en .contenido se agrega después del DOM estar listo
+  document.addEventListener("DOMContentLoaded", function(){
+    const c = document.querySelector(".contenido");
+    if(c) c.addEventListener("scroll", onScroll, {passive: true});
+  });
+  // Por si DOMContentLoaded ya pasó
+  const _c = document.querySelector(".contenido");
+  if(_c) _c.addEventListener("scroll", onScroll, {passive: true});
 })();
 
 
