@@ -578,6 +578,10 @@ h1,h2,h3{font-family:'Sora', system-ui, sans-serif; margin:0; letter-spacing:-0.
   .kpis{grid-template-columns:repeat(2,1fr);}
   .kpis-5{grid-template-columns:repeat(2,1fr);}
   .paneles-estadisticas{grid-template-columns:1fr;}
+  .panel-grafico canvas{max-height:160px;}
+  .panel-top{max-height:none;}
+  .paneles-estadisticas .panel-grafico,
+  .paneles-estadisticas .panel-top{padding:14px;}
   .comparativa-doble{grid-template-columns:1fr;}
   .resumen-mensual-destacados{grid-template-columns:1fr;}
   .bloque-stats .kpis{grid-template-columns:repeat(2,1fr);}
@@ -4000,7 +4004,7 @@ function dibujarGraficoBarras(idCanvas, barras){
   const ctx = canvas.getContext('2d');
   const dpr = window.devicePixelRatio || 1;
   const w = canvas.clientWidth || 480;
-  const h = 220;
+  const h = window.innerWidth <= 680 ? 160 : 220;
   canvas.width = w*dpr; canvas.height = h*dpr;
   ctx.scale(dpr,dpr);
   ctx.clearRect(0,0,w,h);
