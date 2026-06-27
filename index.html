@@ -54,12 +54,13 @@
 }
 
 *{box-sizing:border-box;}
-html,body{margin:0;padding:0;overflow-x:hidden;overscroll-behavior:none;}
+html,body{margin:0;padding:0;overflow-x:hidden;}
 body{
   font-family:'Inter', system-ui, sans-serif;
   background:var(--papel);
   color:var(--texto);
   -webkit-font-smoothing:antialiased;
+  overscroll-behavior-y:contain;
 }
 .hidden{display:none !important;}
 .oculto{display:none !important;}
