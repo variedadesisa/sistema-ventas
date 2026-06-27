@@ -588,7 +588,8 @@ h1,h2,h3{font-family:'Sora', system-ui, sans-serif; margin:0; letter-spacing:-0.
 @media (max-width: 680px){
   .app{flex-direction:column;}
   .sidebar{
-    width:100%; height:auto; position:static; flex-direction:row; align-items:center;
+    width:100%; height:auto; position:fixed; top:0; left:0; right:0; flex-direction:row; align-items:center; z-index:50;
+    transition:transform .25s ease;
     padding:10px 14px; padding-top:max(10px, env(safe-area-inset-top));
     overflow-x:auto; scrollbar-width:none;
   }
@@ -597,7 +598,7 @@ h1,h2,h3{font-family:'Sora', system-ui, sans-serif; margin:0; letter-spacing:-0.
   .sidebar-nav{flex-direction:row; flex-shrink:0;}
   .nav-item{white-space:nowrap;}
   .sidebar-footer{display:none;}
-  .contenido{padding:16px; margin-left:0;}
+  .contenido{padding:16px; margin-left:0; padding-top:72px;}
   .kpis{grid-template-columns:1fr 1fr;}
   .bloque-stats .kpis{grid-template-columns:1fr 1fr;}
   .bloque-stats{padding:16px;}
@@ -678,8 +679,11 @@ h1,h2,h3{font-family:'Sora', system-ui, sans-serif; margin:0; letter-spacing:-0.
 }
 
 /* Foco accesible */
-button:focus-visible, input:focus-visible, textarea:focus-visible{
+button:focus-visible{
   outline:2px solid var(--verde); outline-offset:1px;
+}
+input:focus-visible, textarea:focus-visible{
+  outline:none;
 }
 
 /* ---------- TÁCTIL: agranda objetivos de toque sin afectar el uso con mouse ----------
@@ -4303,6 +4307,27 @@ $('btnBuscarParaEliminar').addEventListener('click', ()=>{
     });
   });
 });
+
+// ---------- MENÚ MÓVIL: OCULTAR AL BAJAR, MOSTRAR AL SUBIR ----------
+(function(){
+  let ultimoScroll = 0;
+  const UMBRAL = 8; // px mínimos para considerar que hubo scroll real
+  window.addEventListener("scroll", function(){
+    if(window.innerWidth > 680) return; // solo en móvil
+    const sidebar = document.querySelector(".sidebar");
+    if(!sidebar) return;
+    const scrollActual = window.scrollY;
+    if(Math.abs(scrollActual - ultimoScroll) < UMBRAL) return;
+    if(scrollActual > ultimoScroll && scrollActual > 60){
+      // bajando
+      sidebar.style.transform = "translateY(-100%)";
+    } else {
+      // subiendo
+      sidebar.style.transform = "translateY(0)";
+    }
+    ultimoScroll = scrollActual;
+  }, {passive: true});
+})();
 
 // ---------- ARRANQUE ----------
 iniciarApp();
