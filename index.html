@@ -119,6 +119,13 @@ h1,h2,h3{font-family:'Sora', system-ui, sans-serif; margin:0; letter-spacing:-0.
 }
 .vista-header h1{font-size:28px; font-weight:700;}
 
+/* El header de Caja se queda fijo mientras los productos scrollean */
+#vista-caja > .vista-header{
+  position:sticky; top:0; z-index:40;
+  background:var(--papel); padding-bottom:16px;
+  margin-bottom:0;
+}
+
 /* ---------- BUSCADOR ---------- */
 .buscador{
   display:flex; align-items:center; gap:8px;
