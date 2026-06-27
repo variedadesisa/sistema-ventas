@@ -143,7 +143,7 @@ h1,h2,h3{font-family:'Sora', system-ui, sans-serif; margin:0; letter-spacing:-0.
 .btn-limpiar-buscador:hover{background:var(--papel); color:var(--coral);}
 
 /* ---------- CAJA ---------- */
-.caja-layout{display:grid; grid-template-columns:1fr 340px; gap:24px; align-items:start;}
+.caja-layout{display:grid; grid-template-columns:1fr 340px; gap:24px; align-items:start; padding-right:0;}
 
 .grid-productos{
   display:flex; flex-direction:column; gap:0;
@@ -169,8 +169,11 @@ h1,h2,h3{font-family:'Sora', system-ui, sans-serif; margin:0; letter-spacing:-0.
 
 .ticket{
   background:var(--papel-card); border:1px solid var(--linea); border-radius:var(--radio);
-  display:flex; flex-direction:column; position:sticky; top:32px;
-  max-height:calc(100vh - 64px);
+  display:flex; flex-direction:column; position:fixed;
+  top:calc(32px + 88px); /* debajo del header de caja */
+  right:40px;
+  width:340px;
+  max-height:calc(100vh - 32px - 88px - 32px);
 }
 .ticket-header{
   display:flex; justify-content:space-between; align-items:center;
@@ -581,7 +584,7 @@ h1,h2,h3{font-family:'Sora', system-ui, sans-serif; margin:0; letter-spacing:-0.
 */
 @media (max-width: 980px){
   .caja-layout{grid-template-columns:1fr;}
-  .ticket{position:static; max-height:none;}
+  .ticket{position:static; max-height:none; width:auto; right:auto; top:auto;}
   .kpis{grid-template-columns:repeat(2,1fr);}
   .kpis-5{grid-template-columns:repeat(2,1fr);}
   .paneles-estadisticas{grid-template-columns:1fr; width:100%;}
@@ -4610,6 +4613,29 @@ $('btnBuscarParaEliminar').addEventListener('click', ()=>{
     abrir(el);
   }, true);
 
+})();
+
+// ---------- CONFIRMACIÓN AL SALIR (móvil) ----------
+// En Android, el botón "Atrás" dispara popstate. Lo interceptamos
+// para mostrar un diálogo de confirmación antes de cerrar la app.
+(function(){
+  // Solo en móvil
+  if(window.innerWidth > 680) return;
+
+  // Empujamos un estado para que haya algo a donde "volver"
+  history.pushState({appHome: true}, '');
+
+  window.addEventListener('popstate', function(e){
+    // Si el usuario presionó Atrás, mostramos confirmación
+    const salir = window.confirm('¿Salir de la aplicación?');
+    if(salir){
+      // Dejamos que el navegador navegue hacia atrás de verdad
+      history.back();
+    } else {
+      // Volvemos a empujar el estado para seguir interceptando
+      history.pushState({appHome: true}, '');
+    }
+  });
 })();
 
 // ---------- ARRANQUE ----------
