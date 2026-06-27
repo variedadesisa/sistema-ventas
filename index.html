@@ -78,7 +78,7 @@ h1,h2,h3{font-family:'Sora', system-ui, sans-serif; margin:0; letter-spacing:-0.
   color:#fff;
   display:flex; flex-direction:column;
   padding:24px 16px;
-  position:sticky; top:0; height:100vh;
+  position:fixed; top:0; left:0; height:100vh; z-index:50;
 }
 .sidebar-logo{
   font-family:'Sora', sans-serif; font-weight:800; font-size:20px; letter-spacing:0.02em;
@@ -107,7 +107,7 @@ h1,h2,h3{font-family:'Sora', system-ui, sans-serif; margin:0; letter-spacing:-0.
 }
 .nav-item-config:hover{background:var(--tinta-suave); color:#fff;}
 
-.contenido{flex:1; padding:32px 40px; max-width:min(1400px, 100%);}
+.contenido{flex:1; padding:32px 40px; max-width:min(1400px, 100%); margin-left:220px;}
 
 .vista-header{
   display:flex; justify-content:space-between; align-items:flex-end; gap:24px;
@@ -597,7 +597,7 @@ h1,h2,h3{font-family:'Sora', system-ui, sans-serif; margin:0; letter-spacing:-0.
   .sidebar-nav{flex-direction:row; flex-shrink:0;}
   .nav-item{white-space:nowrap;}
   .sidebar-footer{display:none;}
-  .contenido{padding:16px;}
+  .contenido{padding:16px; margin-left:0;}
   .kpis{grid-template-columns:1fr 1fr;}
   .bloque-stats .kpis{grid-template-columns:1fr 1fr;}
   .bloque-stats{padding:16px;}
