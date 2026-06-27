@@ -577,14 +577,14 @@ h1,h2,h3{font-family:'Sora', system-ui, sans-serif; margin:0; letter-spacing:-0.
   .ticket{position:static; max-height:none;}
   .kpis{grid-template-columns:repeat(2,1fr);}
   .kpis-5{grid-template-columns:repeat(2,1fr);}
-  .paneles-estadisticas{grid-template-columns:1fr;}
-  .panel-grafico canvas{max-height:160px;}
-  .panel-top{max-height:none;}
+  .paneles-estadisticas{grid-template-columns:1fr; width:100%;}
   .paneles-estadisticas .panel-grafico,
-  .paneles-estadisticas .panel-top{padding:14px;}
+  .paneles-estadisticas .panel-top{padding:14px; width:100%; box-sizing:border-box; min-width:0;}
+  .panel-grafico canvas{width:100% !important; max-height:160px;}
   .comparativa-doble{grid-template-columns:1fr;}
   .resumen-mensual-destacados{grid-template-columns:1fr;}
   .bloque-stats .kpis{grid-template-columns:repeat(2,1fr);}
+  .bloque-stats{padding:14px; width:100%; box-sizing:border-box; overflow:hidden;}
   .fila-doble{grid-template-columns:1fr;}
   .modal-grande{width:90vw; max-width:600px;}
 }
@@ -602,7 +602,7 @@ h1,h2,h3{font-family:'Sora', system-ui, sans-serif; margin:0; letter-spacing:-0.
   .sidebar-nav{flex-direction:row; flex-shrink:0;}
   .nav-item{white-space:nowrap;}
   .sidebar-footer{display:none;}
-  .contenido{padding:16px; margin-left:0; padding-top:72px; overflow-y:auto; height:100vh; overscroll-behavior-y:contain;}
+  .contenido{padding:16px; margin-left:0; padding-top:72px; overflow-y:auto; overflow-x:hidden; height:100vh; overscroll-behavior-y:contain; box-sizing:border-box; width:100%;}
   .kpis{grid-template-columns:1fr 1fr;}
   .bloque-stats .kpis{grid-template-columns:1fr 1fr;}
   .bloque-stats{padding:16px;}
