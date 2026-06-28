@@ -121,16 +121,26 @@ h1,h2,h3{font-family:'Sora', system-ui, sans-serif; margin:0; letter-spacing:-0.
 
 /* El header de Caja se queda fijo mientras los productos scrollean */
 #vista-caja > .vista-header{
-  position:sticky; top:0; z-index:40;
+  position:sticky; top:-1px; z-index:100;
   background:var(--papel); padding-bottom:16px;
   margin-bottom:0;
+  isolation:isolate;
+}
+/* Capa extra debajo del header: garantiza que cubre 100% del ancho
+   y tapa cualquier producto que pase por detrás al hacer scroll,
+   incluso si algún navegador renderiza con un sub-pixel de hueco */
+#vista-caja > .vista-header::after{
+  content:'';
+  position:absolute; left:-40px; right:-40px; top:100%; height:16px;
+  background:var(--papel);
 }
 
-/* Separación de seguridad: evita que la primera fila de productos
-   quede asomada/cortada detrás del header sticky de Caja al hacer scroll */
+/* Separación de seguridad + nuevo contexto de apilamiento por debajo
+   del header: evita que las tarjetas de producto (que usan transform
+   en :hover) se "asomen" por encima del header sticky al hacer scroll */
 #vista-caja .caja-layout{
   padding-top:12px;
-  position:relative; z-index:1;
+  position:relative; z-index:1; isolation:isolate;
 }
 
 /* El ticket se pega justo debajo del header sticky de caja.
@@ -643,6 +653,7 @@ h1,h2,h3{font-family:'Sora', system-ui, sans-serif; margin:0; letter-spacing:-0.
   /* Caja: el ticket se vuelve un panel deslizable desde abajo, para no
      obligar a hacer scroll largo solo para llegar al botón de cobrar. */
   .caja-layout{padding-bottom:64px;} /* deja espacio para la barra fija */
+  #vista-caja > .vista-header::after{left:-16px; right:-16px;}
   .ticket{
     position:fixed; left:0; right:0; bottom:0; z-index:90;
     max-height:85vh; border-radius:16px 16px 0 0;
