@@ -4485,11 +4485,13 @@ $('btnBuscarParaEliminar').addEventListener('click', ()=>{
 
 
 // ---------- TECLADO VIRTUAL PARA LAPTOP TOUCH ----------
-// Solo se activa en dispositivos touch que NO son móvil (≥681px)
-// ya que en móvil el teclado nativo es suficiente y cómodo.
+// Solo se activa en pantallas touch que NO son móvil (≥681px).
+// Detectamos el toque real con e.pointerType === 'touch' en el momento
+// del pointerdown, así funciona en laptops touch aunque tengan mouse/trackpad.
 (function(){
-  const esTouchNoMovil = () =>
-    window.matchMedia('(pointer: coarse)').matches && window.innerWidth > 680;
+  // Ya no usamos media query — detectamos el tipo de puntero en el evento
+  const esTouchNoMovil = () => window.innerWidth > 680;
+  let ultimoPointerFueTactil = false;
 
   // --- Estado ---
   let inputActivo = null;
@@ -4671,20 +4673,24 @@ $('btnBuscarParaEliminar').addEventListener('click', ()=>{
     if(e.target === overlay) cerrar(true);
   });
 
-  // Interceptar focus en inputs cuando es laptop touch:
-  // usamos pointerdown en capture para poner readonly ANTES de que el
-  // OS decida abrir su teclado, luego abrimos el nuestro en focusin.
+  // Interceptar toque en inputs:
+  // 1) pointerdown en capture: si el puntero es táctil, ponemos readonly
+  //    ANTES de que el OS decida abrir su teclado nativo.
+  // 2) focusin: si el último toque fue táctil, abrimos nuestro teclado.
   document.addEventListener('pointerdown', e => {
+    ultimoPointerFueTactil = (e.pointerType === 'touch');
     const el = e.target;
+    if(!ultimoPointerFueTactil) return;
     if(!esTouchNoMovil()) return;
     if(el.tagName !== 'INPUT' && el.tagName !== 'TEXTAREA') return;
     if(el.type === 'date' || el.type === 'file' || el.type === 'checkbox') return;
-    // Poner readonly aquí, antes del focus, para bloquear el teclado nativo
+    // readonly antes del focus → el OS no abre su teclado virtual
     el.setAttribute('readonly', 'readonly');
   }, true);
 
   document.addEventListener('focusin', e => {
     const el = e.target;
+    if(!ultimoPointerFueTactil) return;
     if(!esTouchNoMovil()) return;
     if(el.tagName !== 'INPUT' && el.tagName !== 'TEXTAREA') return;
     if(el.type === 'date' || el.type === 'file' || el.type === 'checkbox') return;
