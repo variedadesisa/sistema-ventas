@@ -126,6 +126,13 @@ h1,h2,h3{font-family:'Sora', system-ui, sans-serif; margin:0; letter-spacing:-0.
   margin-bottom:0;
 }
 
+/* Separación de seguridad: evita que la primera fila de productos
+   quede asomada/cortada detrás del header sticky de Caja al hacer scroll */
+#vista-caja .caja-layout{
+  padding-top:12px;
+  position:relative; z-index:1;
+}
+
 /* El ticket se pega justo debajo del header sticky de caja.
    --caja-header-h se calcula en JS; fallback 96px */
 #vista-caja .ticket{
