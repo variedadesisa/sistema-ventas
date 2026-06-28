@@ -661,13 +661,17 @@ h1,h2,h3{font-family:'Sora', system-ui, sans-serif; margin:0; letter-spacing:-0.
     display:flex; padding-bottom:env(safe-area-inset-bottom);
     pointer-events:none; visibility:hidden; /* cerrado: nunca bloquea toques de lo que está debajo */
   }
-  /* Corrige que la regla de escritorio "#vista-caja .ticket{top:var(--caja-header-h)}"
-     (más específica por el #id) se filtre también en móvil. Acá el ticket es una
-     hoja fija con bottom:0, así que no debe llevar ningún "top" heredado: si lo
-     conserva, la hoja arranca pegada al header en vez de cubrir toda la pantalla
-     desde abajo, y por eso el buscador y el texto "Punto de venta / Caja" se ven
-     enredados encima del panel al abrirlo. */
-  #vista-caja .ticket{top:auto;}
+  /* Corrige que la regla de escritorio "#vista-caja .ticket{top:...; max-height:...}"
+     (más específica por el #id) se filtre también en móvil con un valor de respaldo
+     pensado para PC (96px), muy chico frente a la altura real del header en celular
+     (barra de navegación + título + buscador, ~180-220px). Por eso el panel del
+     ticket "crecía" de más hacia arriba y tapaba el buscador al abrirlo.
+     Acá usamos la misma variable --caja-header-h (ahora medida también en móvil
+     por JS) con un respaldo más realista para celular, y un margen chico de aire. */
+  #vista-caja .ticket{
+    top:auto;
+    max-height: calc(100vh - var(--caja-header-h, 220px) - 16px);
+  }
   .ticket.ticket-abierto{transform:translateY(0); pointer-events:auto; visibility:visible;}
 
   /* Fondo oscuro detrás del ticket: oprimirlo también lo cierra */
@@ -4669,9 +4673,11 @@ $('btnBuscarParaEliminar').addEventListener('click', ()=>{
 })();
 
 // ---------- TICKET STICKY: ajustar top según altura real del header de caja ----------
+// Se mide en TODOS los anchos (antes solo en escritorio) porque en móvil el
+// panel del ticket también necesita saber la altura real del header para no
+// taparlo al abrirse como hoja deslizable.
 (function(){
   function ajustarTicket(){
-    if(window.innerWidth <= 980) return; // solo desktop
     const header = document.querySelector('#vista-caja > .vista-header');
     if(!header) return;
     const h = header.getBoundingClientRect().height;
