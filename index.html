@@ -1953,23 +1953,6 @@ input:focus-visible, textarea:focus-visible{
   </div>
 </div>
 
-<!-- MODAL SALIR DE LA APP (móvil) -->
-<div id="modalSalirApp" class="modal-overlay hidden">
-  <div class="modal-box modal-confirmar">
-    <div class="modal-confirmar-icono">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>
-      </svg>
-    </div>
-    <h3>¿Salir de la aplicación?</h3>
-    <p>Se cerrará el sistema de ventas.</p>
-    <div class="modal-confirmar-acciones">
-      <button class="btn-secundario" id="btnCancelarSalir">Cancelar</button>
-      <button class="btn-danger" id="btnConfirmarSalir">Sí, salir</button>
-    </div>
-  </div>
-</div>
-
 <div id="toast" class="toast hidden"></div>
 
 <script>
@@ -4695,41 +4678,6 @@ $('btnBuscarParaEliminar').addEventListener('click', ()=>{
 
 })();
 
-// ---------- CONFIRMACIÓN AL SALIR (móvil) ----------
-// En Android PWA el botón "Atrás" dispara popstate.
-// Usamos un flag "saliendo" para evitar que history.back() al confirmar
-// vuelva a disparar popstate y abra el modal de nuevo (loop/parpadeo).
-(function(){
-  if(window.innerWidth > 680) return;
-
-  var modalSalir   = document.getElementById('modalSalirApp');
-  var btnConfirmar = document.getElementById('btnConfirmarSalir');
-  var btnCancelar  = document.getElementById('btnCancelarSalir');
-  if(!modalSalir) return;
-
-  var saliendo = false;
-
-  // Estado centinela inicial
-  history.pushState({appHome: true}, '');
-
-  window.addEventListener('popstate', function(e){
-    // Si estamos saliendo intencionalmente, ignoramos este popstate
-    if(saliendo) return;
-    // Re-empujamos el centinela para poder hacer back() al confirmar
-    history.pushState({appHome: true}, '');
-    modalSalir.classList.remove('hidden');
-  });
-
-  btnConfirmar.addEventListener('click', function(){
-    modalSalir.classList.add('hidden');
-    saliendo = true; // evita que el siguiente popstate abra el modal
-    history.back(); // consume el centinela -> Android cierra la PWA
-  });
-
-  btnCancelar.addEventListener('click', function(){
-    modalSalir.classList.add('hidden');
-  });
-})();
 
 // ---------- TICKET STICKY: ajustar top según altura real del header de caja ----------
 (function(){
