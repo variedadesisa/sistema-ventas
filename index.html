@@ -639,7 +639,7 @@ h1,h2,h3{font-family:'Sora', system-ui, sans-serif; margin:0; letter-spacing:-0.
   .kpis{grid-template-columns:1fr 1fr;}
   .bloque-stats .kpis{grid-template-columns:1fr 1fr;}
   .bloque-stats{padding:16px;}
-  .vista-header{flex-direction:column; align-items:flex-start; gap:10px; margin-top:72px;}
+  .vista-header{flex-direction:column; align-items:flex-start; gap:10px; margin-top:var(--sidebar-movil-h, 72px);}
   .buscador{width:100%;}
   .acciones-header-productos{width:100%; flex-wrap:wrap;}
   .acciones-header-productos button{flex:1; min-width:120px;}
@@ -654,7 +654,7 @@ h1,h2,h3{font-family:'Sora', system-ui, sans-serif; margin:0; letter-spacing:-0.
      obligar a hacer scroll largo solo para llegar al botón de cobrar. */
   .caja-layout{padding-bottom:64px;} /* deja espacio para la barra fija */
   #vista-caja > .vista-header::after{left:-16px; right:-16px;}
-  #vista-caja > .vista-header{padding-top:72px; margin-top:0;}
+  #vista-caja > .vista-header{padding-top:var(--sidebar-movil-h, 72px); margin-top:0; z-index:40;}
   .ticket{
     position:fixed; left:0; right:0; bottom:0; z-index:90;
     max-height:85vh; border-radius:16px 16px 0 0;
@@ -4678,6 +4678,29 @@ $('btnBuscarParaEliminar').addEventListener('click', ()=>{
   // También cuando se navega a la vista caja
   document.addEventListener('DOMContentLoaded', ajustarTicket);
   setTimeout(ajustarTicket, 500); // por si las fuentes tardan
+})();
+
+// ---------- SIDEBAR MÓVIL: medir su altura real (varía por dispositivo,
+// por el notch / safe-area-inset-top) en vez de asumir un valor fijo.
+// Así el espacio que reservamos arriba del contenido siempre coincide
+// exactamente con lo que el sidebar realmente ocupa, sin huecos ni
+// superposiciones. ----------
+(function(){
+  function ajustarSidebarMovil(){
+    if(window.innerWidth > 680){
+      document.documentElement.style.setProperty('--sidebar-movil-h', '0px');
+      return;
+    }
+    const sidebar = document.querySelector('.sidebar');
+    if(!sidebar) return;
+    const h = sidebar.getBoundingClientRect().height;
+    document.documentElement.style.setProperty('--sidebar-movil-h', h + 'px');
+  }
+  window.addEventListener('load', ajustarSidebarMovil);
+  window.addEventListener('resize', ajustarSidebarMovil);
+  window.addEventListener('orientationchange', ajustarSidebarMovil);
+  document.addEventListener('DOMContentLoaded', ajustarSidebarMovil);
+  setTimeout(ajustarSidebarMovil, 500); // por si las fuentes/iconos tardan
 })();
 
 // ---------- ARRANQUE ----------
