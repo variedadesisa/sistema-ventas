@@ -107,11 +107,11 @@ h1,h2,h3{font-family:'Sora', system-ui, sans-serif; margin:0; letter-spacing:-0.
 }
 .nav-item-config:hover{background:var(--tinta-suave); color:#fff;}
 
-.contenido{flex:1; padding:32px 40px; max-width:min(1400px, 100%); margin-left:220px; overflow-y:auto; height:100vh; overscroll-behavior-y:contain;}
+.contenido{flex:1; padding:0 40px 32px; max-width:min(1400px, 100%); margin-left:220px; overflow-y:auto; height:100vh; overscroll-behavior-y:contain;}
 
 .vista-header{
   display:flex; justify-content:space-between; align-items:flex-end; gap:24px;
-  margin-bottom:24px; flex-wrap:wrap;
+  margin-bottom:24px; margin-top:32px; flex-wrap:wrap;
 }
 .eyebrow{
   font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:.08em;
@@ -121,9 +121,9 @@ h1,h2,h3{font-family:'Sora', system-ui, sans-serif; margin:0; letter-spacing:-0.
 
 /* El header de Caja se queda fijo mientras los productos scrollean */
 #vista-caja > .vista-header{
-  position:sticky; top:-1px; z-index:100;
-  background:var(--papel); padding-bottom:16px;
-  margin-bottom:0;
+  position:sticky; top:0; z-index:100;
+  background:var(--papel); padding-bottom:16px; padding-top:32px;
+  margin-bottom:0; margin-top:0;
   isolation:isolate;
 }
 /* Capa extra debajo del header: garantiza que cubre 100% del ancho
@@ -635,11 +635,11 @@ h1,h2,h3{font-family:'Sora', system-ui, sans-serif; margin:0; letter-spacing:-0.
   .sidebar-nav{flex-direction:row; flex-shrink:0;}
   .nav-item{white-space:nowrap;}
   .sidebar-footer{display:none;}
-  .contenido{padding:16px; margin-left:0; padding-top:72px; overflow-y:auto; overflow-x:hidden; height:100vh; overscroll-behavior-y:contain; box-sizing:border-box; width:100%;}
+  .contenido{padding:16px; padding-top:0; margin-left:0; overflow-y:auto; overflow-x:hidden; height:100vh; overscroll-behavior-y:contain; box-sizing:border-box; width:100%;}
   .kpis{grid-template-columns:1fr 1fr;}
   .bloque-stats .kpis{grid-template-columns:1fr 1fr;}
   .bloque-stats{padding:16px;}
-  .vista-header{flex-direction:column; align-items:flex-start; gap:10px;}
+  .vista-header{flex-direction:column; align-items:flex-start; gap:10px; margin-top:72px;}
   .buscador{width:100%;}
   .acciones-header-productos{width:100%; flex-wrap:wrap;}
   .acciones-header-productos button{flex:1; min-width:120px;}
@@ -654,6 +654,7 @@ h1,h2,h3{font-family:'Sora', system-ui, sans-serif; margin:0; letter-spacing:-0.
      obligar a hacer scroll largo solo para llegar al botón de cobrar. */
   .caja-layout{padding-bottom:64px;} /* deja espacio para la barra fija */
   #vista-caja > .vista-header::after{left:-16px; right:-16px;}
+  #vista-caja > .vista-header{padding-top:72px; margin-top:0;}
   .ticket{
     position:fixed; left:0; right:0; bottom:0; z-index:90;
     max-height:85vh; border-radius:16px 16px 0 0;
