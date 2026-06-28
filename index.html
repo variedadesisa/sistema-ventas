@@ -675,6 +675,15 @@ h1,h2,h3{font-family:'Sora', system-ui, sans-serif; margin:0; letter-spacing:-0.
     max-height:96vh;
   }
 
+  /* En móvil, quitamos el isolation de .caja-layout para que el ticket
+     (position:fixed, z-index:110) compita en el stacking context raíz
+     y quede por encima del sidebar (z-index:50). Sin esto, el isolation
+     encierra el z-index del ticket dentro del contexto de .caja-layout
+     (z-index:1) y el sidebar siempre lo tapa. */
+  #vista-caja .caja-layout{
+    isolation:auto;
+  }
+
   /* Fondo oscuro detrás del ticket: oprimirlo también lo cierra */
   .ticket-movil-overlay{
     display:block; position:fixed; inset:0; z-index:105;
