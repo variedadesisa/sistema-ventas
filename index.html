@@ -675,12 +675,18 @@ h1,h2,h3{font-family:'Sora', system-ui, sans-serif; margin:0; letter-spacing:-0.
     max-height:96vh;
   }
 
-  /* En móvil, quitamos el isolation de .caja-layout para que el ticket
-     (position:fixed, z-index:110) compita en el stacking context raíz
-     y quede por encima del sidebar (z-index:50). Sin esto, el isolation
-     encierra el z-index del ticket dentro del contexto de .caja-layout
-     (z-index:1) y el sidebar siempre lo tapa. */
+  /* En móvil el ticket es position:fixed y debe flotar sobre el sidebar.
+     El problema: .caja-layout tiene position:relative + z-index:1 + isolation:isolate,
+     lo que crea un stacking context propio — el ticket queda atrapado dentro con
+     z-index máximo = 1 en el contexto raíz, y el sidebar (z-index:50) lo tapa.
+     Solución: desactivamos los tres disparadores del stacking context en móvil. */
   #vista-caja .caja-layout{
+    position:static;
+    z-index:auto;
+    isolation:auto;
+  }
+  /* Igual para el vista-header sticky que también tiene isolation:isolate */
+  #vista-caja > .vista-header{
     isolation:auto;
   }
 
@@ -4673,8 +4679,13 @@ $('btnBuscarParaEliminar').addEventListener('click', ()=>{
 })();
 
 // ---------- CONFIRMACIÓN AL SALIR (móvil) ----------
-// En Android, el botón "Atrás" dispara popstate. Lo interceptamos
-// para mostrar un diálogo de confirmación antes de cerrar la app.
+// En Android PWA, el botón "Atrás" consume el estado pushState y dispara
+// popstate. Si no hay más historial, Android cierra la app automáticamente.
+// La estrategia: empujamos UN estado extra al inicio. Cuando el usuario
+// presiona Atrás, ese estado se consume (popstate). Si confirma salir,
+// no hacemos nada — Android ya navegó hacia atrás y si no hay más estados
+// cerrará la app. Si cancela, volvemos a empujar el estado para seguir
+// interceptando la próxima vez.
 (function(){
   // Solo en móvil
   if(window.innerWidth > 680) return;
@@ -4683,15 +4694,17 @@ $('btnBuscarParaEliminar').addEventListener('click', ()=>{
   history.pushState({appHome: true}, '');
 
   window.addEventListener('popstate', function(e){
-    // Si el usuario presionó Atrás, mostramos confirmación
+    // El popstate ya ocurrió — Android ya consumió el estado.
+    // Mostramos confirmación ANTES de decidir qué hacer.
     const salir = window.confirm('¿Salir de la aplicación?');
     if(salir){
-      // En PWA standalone Android, window.close() cierra la app.
-      // Como fallback vaciamos el historial para no dejar nada a donde volver.
-      try{ window.close(); } catch(_){}
-      setTimeout(function(){ history.go(-(history.length + 1)); }, 100);
+      // No hacemos nada: el historial ya retrocedió.
+      // Si no hay más entradas, Android cerrará la PWA solo.
+      // Si por alguna razón hay más historial, lo vaciamos.
+      history.go(-history.length);
     } else {
-      // Volvemos a empujar el estado para seguir interceptando
+      // El usuario canceló: re-empujamos el estado centinela
+      // para poder interceptar el próximo intento de salir.
       history.pushState({appHome: true}, '');
     }
   });
