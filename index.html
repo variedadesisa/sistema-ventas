@@ -121,19 +121,15 @@ h1,h2,h3{font-family:'Sora', system-ui, sans-serif; margin:0; letter-spacing:-0.
 
 /* El header de Caja se queda fijo mientras los productos scrollean */
 #vista-caja > .vista-header{
-  position:sticky; top:0; z-index:100;
+  position:sticky; top:-1px; z-index:100;
   background:var(--papel); padding-bottom:16px; padding-top:32px;
   margin-bottom:0; margin-top:0;
   isolation:isolate;
 }
-/* Capa extra debajo del header: garantiza que cubre 100% del ancho
-   y tapa cualquier producto que pase por detrás al hacer scroll,
-   incluso si algún navegador renderiza con un sub-pixel de hueco */
-#vista-caja > .vista-header::after{
-  content:'';
-  position:absolute; left:-40px; right:-40px; top:100%; height:16px;
-  background:var(--papel);
-}
+/* Nota: ya no se necesita una capa ::after extra debajo del header,
+   porque el espacio superior ahora vive DENTRO del header (como su
+   propio padding-top), así que el header sticky ya cubre 100% sin
+   dejar huecos por donde se asomen productos al hacer scroll. */
 
 /* Separación de seguridad + nuevo contexto de apilamiento por debajo
    del header: evita que las tarjetas de producto (que usan transform
@@ -653,7 +649,6 @@ h1,h2,h3{font-family:'Sora', system-ui, sans-serif; margin:0; letter-spacing:-0.
   /* Caja: el ticket se vuelve un panel deslizable desde abajo, para no
      obligar a hacer scroll largo solo para llegar al botón de cobrar. */
   .caja-layout{padding-bottom:64px;} /* deja espacio para la barra fija */
-  #vista-caja > .vista-header::after{left:-16px; right:-16px;}
   #vista-caja > .vista-header{padding-top:var(--sidebar-movil-h, 72px); margin-top:0; z-index:40;}
   .ticket{
     position:fixed; left:0; right:0; bottom:0; z-index:90;
@@ -4678,6 +4673,18 @@ $('btnBuscarParaEliminar').addEventListener('click', ()=>{
   // También cuando se navega a la vista caja
   document.addEventListener('DOMContentLoaded', ajustarTicket);
   setTimeout(ajustarTicket, 500); // por si las fuentes tardan
+
+  // ResizeObserver: si el header cambia de tamaño en cualquier momento
+  // (fuentes que tardan en cargar, contenido que se ajusta, etc.) el
+  // ticket se reposiciona al instante, sin esperar un timeout fijo que
+  // podría coincidir justo cuando el usuario ya está haciendo scroll
+  // (eso es lo que se percibía como un "salto" del ticket).
+  if(window.ResizeObserver){
+    const header = document.querySelector('#vista-caja > .vista-header');
+    if(header){
+      new ResizeObserver(ajustarTicket).observe(header);
+    }
+  }
 })();
 
 // ---------- SIDEBAR MÓVIL: medir su altura real (varía por dispositivo,
