@@ -1953,6 +1953,23 @@ input:focus-visible, textarea:focus-visible{
   </div>
 </div>
 
+<!-- MODAL SALIR DE LA APP (móvil) -->
+<div id="modalSalirApp" class="modal-overlay hidden">
+  <div class="modal-box modal-confirmar">
+    <div class="modal-confirmar-icono">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>
+      </svg>
+    </div>
+    <h3>¿Salir de la aplicación?</h3>
+    <p>Se cerrará el sistema de ventas.</p>
+    <div class="modal-confirmar-acciones">
+      <button class="btn-secundario" id="btnCancelarSalir">Cancelar</button>
+      <button class="btn-danger" id="btnConfirmarSalir">Sí, salir</button>
+    </div>
+  </div>
+</div>
+
 <div id="toast" class="toast hidden"></div>
 
 <script>
@@ -4679,34 +4696,42 @@ $('btnBuscarParaEliminar').addEventListener('click', ()=>{
 })();
 
 // ---------- CONFIRMACIÓN AL SALIR (móvil) ----------
-// En Android PWA, el botón "Atrás" consume el estado pushState y dispara
-// popstate. Si no hay más historial, Android cierra la app automáticamente.
-// La estrategia: empujamos UN estado extra al inicio. Cuando el usuario
-// presiona Atrás, ese estado se consume (popstate). Si confirma salir,
-// no hacemos nada — Android ya navegó hacia atrás y si no hay más estados
-// cerrará la app. Si cancela, volvemos a empujar el estado para seguir
-// interceptando la próxima vez.
+// En Android PWA el botón "Atrás" dispara popstate.
+// Estrategia: siempre mantenemos un estado centinela en el historial.
+// Cuando el usuario presiona Atrás, el popstate lo consume — PERO
+// nosotros re-empujamos el estado de inmediato para "atrapar" el back,
+// y mostramos nuestro modal. Si confirma salir, llamamos history.back()
+// manualmente (ahora sí hay un estado que consumir porque lo
+// re-empujamos). Si cancela, no hacemos nada — el centinela ya está.
 (function(){
-  // Solo en móvil
   if(window.innerWidth > 680) return;
 
-  // Empujamos un estado para que haya algo a donde "volver"
+  var modalSalir   = document.getElementById('modalSalirApp');
+  var btnConfirmar = document.getElementById('btnConfirmarSalir');
+  var btnCancelar  = document.getElementById('btnCancelarSalir');
+  if(!modalSalir) return;
+
+  // Estado centinela inicial
   history.pushState({appHome: true}, '');
 
   window.addEventListener('popstate', function(e){
-    // El popstate ya ocurrió — Android ya consumió el estado.
-    // Mostramos confirmación ANTES de decidir qué hacer.
-    const salir = window.confirm('¿Salir de la aplicación?');
-    if(salir){
-      // No hacemos nada: el historial ya retrocedió.
-      // Si no hay más entradas, Android cerrará la PWA solo.
-      // Si por alguna razón hay más historial, lo vaciamos.
-      history.go(-history.length);
-    } else {
-      // El usuario canceló: re-empujamos el estado centinela
-      // para poder interceptar el próximo intento de salir.
-      history.pushState({appHome: true}, '');
-    }
+    // Re-empujamos el centinela ANTES de mostrar el modal,
+    // así history.back() posterior tendrá algo que consumir.
+    history.pushState({appHome: true}, '');
+    // Mostramos nuestro modal (z-index 500, siempre encima)
+    modalSalir.classList.remove('hidden');
+  });
+
+  btnConfirmar.addEventListener('click', function(){
+    modalSalir.classList.add('hidden');
+    // Consumimos el centinela que re-empujamos arriba;
+    // si no hay más historial, Android cierra la PWA.
+    history.back();
+  });
+
+  btnCancelar.addEventListener('click', function(){
+    modalSalir.classList.add('hidden');
+    // El centinela ya está en su lugar, no hace falta nada más.
   });
 })();
 
