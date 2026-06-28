@@ -4697,12 +4697,8 @@ $('btnBuscarParaEliminar').addEventListener('click', ()=>{
 
 // ---------- CONFIRMACIÓN AL SALIR (móvil) ----------
 // En Android PWA el botón "Atrás" dispara popstate.
-// Estrategia: siempre mantenemos un estado centinela en el historial.
-// Cuando el usuario presiona Atrás, el popstate lo consume — PERO
-// nosotros re-empujamos el estado de inmediato para "atrapar" el back,
-// y mostramos nuestro modal. Si confirma salir, llamamos history.back()
-// manualmente (ahora sí hay un estado que consumir porque lo
-// re-empujamos). Si cancela, no hacemos nada — el centinela ya está.
+// Usamos un flag "saliendo" para evitar que history.back() al confirmar
+// vuelva a disparar popstate y abra el modal de nuevo (loop/parpadeo).
 (function(){
   if(window.innerWidth > 680) return;
 
@@ -4711,27 +4707,27 @@ $('btnBuscarParaEliminar').addEventListener('click', ()=>{
   var btnCancelar  = document.getElementById('btnCancelarSalir');
   if(!modalSalir) return;
 
+  var saliendo = false;
+
   // Estado centinela inicial
   history.pushState({appHome: true}, '');
 
   window.addEventListener('popstate', function(e){
-    // Re-empujamos el centinela ANTES de mostrar el modal,
-    // así history.back() posterior tendrá algo que consumir.
+    // Si estamos saliendo intencionalmente, ignoramos este popstate
+    if(saliendo) return;
+    // Re-empujamos el centinela para poder hacer back() al confirmar
     history.pushState({appHome: true}, '');
-    // Mostramos nuestro modal (z-index 500, siempre encima)
     modalSalir.classList.remove('hidden');
   });
 
   btnConfirmar.addEventListener('click', function(){
     modalSalir.classList.add('hidden');
-    // Consumimos el centinela que re-empujamos arriba;
-    // si no hay más historial, Android cierra la PWA.
-    history.back();
+    saliendo = true; // evita que el siguiente popstate abra el modal
+    history.back(); // consume el centinela -> Android cierra la PWA
   });
 
   btnCancelar.addEventListener('click', function(){
     modalSalir.classList.add('hidden');
-    // El centinela ya está en su lugar, no hace falta nada más.
   });
 })();
 
