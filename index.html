@@ -661,17 +661,6 @@ h1,h2,h3{font-family:'Sora', system-ui, sans-serif; margin:0; letter-spacing:-0.
     display:flex; padding-bottom:env(safe-area-inset-bottom);
     pointer-events:none; visibility:hidden; /* cerrado: nunca bloquea toques de lo que está debajo */
   }
-  /* Corrige que la regla de escritorio "#vista-caja .ticket{top:...; max-height:...}"
-     (más específica por el #id) se filtre también en móvil con un valor de respaldo
-     pensado para PC (96px), muy chico frente a la altura real del header en celular
-     (barra de navegación + título + buscador, ~180-220px). Por eso el panel del
-     ticket "crecía" de más hacia arriba y tapaba el buscador al abrirlo.
-     Acá usamos la misma variable --caja-header-h (ahora medida también en móvil
-     por JS) con un respaldo más realista para celular, y un margen chico de aire. */
-  #vista-caja .ticket{
-    top:auto;
-    max-height: calc(100vh - var(--caja-header-h, 220px) - 16px);
-  }
   .ticket.ticket-abierto{transform:translateY(0); pointer-events:auto; visibility:visible;}
 
   /* Fondo oscuro detrás del ticket: oprimirlo también lo cierra */
@@ -681,6 +670,19 @@ h1,h2,h3{font-family:'Sora', system-ui, sans-serif; margin:0; letter-spacing:-0.
     transition:opacity .2s ease;
   }
   body.ticket-movil-abierto .ticket-movil-overlay{opacity:1; pointer-events:auto;}
+
+  /* El header de Caja (buscador + "Punto de venta / Caja") se queda siempre
+     encima del ticket cuando este se abre en móvil. En vez de seguir
+     calculando alturas, lo resolvemos directo: mientras el ticket está
+     abierto, el header pasa a un z-index bajo (por debajo del overlay oscuro
+     y del propio ticket) y se desactiva al tacto, para que no se vea ni se
+     pueda tocar por encima del panel. Esta regla usa "body.ticket-movil-abierto"
+     que le da más especificidad que las reglas normales del header, así que
+     siempre gana mientras el ticket esté abierto. */
+  body.ticket-movil-abierto #vista-caja > .vista-header{
+    z-index:1;
+    pointer-events:none;
+  }
 
   /* Manija superior del ticket: siempre visible mientras está abierto,
      con un botón grande y explícito para ocultarlo de nuevo. */
@@ -4673,11 +4675,9 @@ $('btnBuscarParaEliminar').addEventListener('click', ()=>{
 })();
 
 // ---------- TICKET STICKY: ajustar top según altura real del header de caja ----------
-// Se mide en TODOS los anchos (antes solo en escritorio) porque en móvil el
-// panel del ticket también necesita saber la altura real del header para no
-// taparlo al abrirse como hoja deslizable.
 (function(){
   function ajustarTicket(){
+    if(window.innerWidth <= 980) return; // solo desktop
     const header = document.querySelector('#vista-caja > .vista-header');
     if(!header) return;
     const h = header.getBoundingClientRect().height;
