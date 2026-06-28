@@ -131,11 +131,14 @@ h1,h2,h3{font-family:'Sora', system-ui, sans-serif; margin:0; letter-spacing:-0.
    propio padding-top), así que el header sticky ya cubre 100% sin
    dejar huecos por donde se asomen productos al hacer scroll. */
 
-/* Separación de seguridad + nuevo contexto de apilamiento por debajo
-   del header: evita que las tarjetas de producto (que usan transform
-   en :hover) se "asomen" por encima del header sticky al hacer scroll */
+/* Nuevo contexto de apilamiento por debajo del header: evita que las
+   tarjetas de producto (que usan transform en :hover) se "asomen" por
+   encima del header sticky al hacer scroll. El padding-top de seguridad
+   se aplica solo a la columna de productos (.caja-catalogo), NO a todo
+   el grid, para no desplazar también al ticket — eso causaba que el
+   ticket tuviera que "recorrer" unos px extra al iniciar el scroll,
+   sintiéndose como un pequeño temblor/reajuste. */
 #vista-caja .caja-layout{
-  padding-top:12px;
   position:relative; z-index:1; isolation:isolate;
 }
 
@@ -745,7 +748,7 @@ input:focus-visible, textarea:focus-visible{
 }
 
 /* ---- CAJA: TABS DE CATEGORÍAS ---- */
-.caja-catalogo{display:flex; flex-direction:column; gap:0; overflow:hidden; flex:1;}
+.caja-catalogo{display:flex; flex-direction:column; gap:0; overflow:hidden; flex:1; padding-top:12px;}
 .caja-tabs{
   display:flex; gap:6px; padding:0 0 14px;
   overflow-x:auto; flex-shrink:0;
