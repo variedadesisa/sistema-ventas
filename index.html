@@ -663,6 +663,18 @@ h1,h2,h3{font-family:'Sora', system-ui, sans-serif; margin:0; letter-spacing:-0.
   }
   .ticket.ticket-abierto{transform:translateY(0); pointer-events:auto; visibility:visible;}
 
+  /* La regla de escritorio "#vista-caja .ticket{top:...; max-height:...}" (más
+     específica por el #id) le gana a la regla de arriba y recorta el panel del
+     ticket en móvil con valores pensados para PC. Eso es lo que dejaba sin
+     espacio al botón "Cobrar venta". Acá lo devolvemos a su alto completo
+     (85% de la pantalla, anclado desde abajo): ya no necesitamos reservarle
+     espacio al header arriba porque ahora queda oculto detrás (ver regla de
+     z-index más abajo). */
+  #vista-caja .ticket{
+    top:auto;
+    max-height:85vh;
+  }
+
   /* Fondo oscuro detrás del ticket: oprimirlo también lo cierra */
   .ticket-movil-overlay{
     display:block; position:fixed; inset:0; z-index:85;
