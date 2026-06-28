@@ -675,6 +675,11 @@ h1,h2,h3{font-family:'Sora', system-ui, sans-serif; margin:0; letter-spacing:-0.
     max-height:85vh;
   }
 
+  /* En móvil el ticket-items no necesita altura mínima fija: con min-height:0
+     el flex shrink puede reducirlo libremente y el ticket-resumen (con el botón
+     "Cobrar venta") siempre queda visible dentro del 85vh disponible. */
+  .ticket-items{min-height:0;}
+
   /* Fondo oscuro detrás del ticket: oprimirlo también lo cierra */
   .ticket-movil-overlay{
     display:block; position:fixed; inset:0; z-index:85;
