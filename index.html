@@ -661,6 +661,13 @@ h1,h2,h3{font-family:'Sora', system-ui, sans-serif; margin:0; letter-spacing:-0.
     display:flex; padding-bottom:env(safe-area-inset-bottom);
     pointer-events:none; visibility:hidden; /* cerrado: nunca bloquea toques de lo que está debajo */
   }
+  /* Corrige que la regla de escritorio "#vista-caja .ticket{top:var(--caja-header-h)}"
+     (más específica por el #id) se filtre también en móvil. Acá el ticket es una
+     hoja fija con bottom:0, así que no debe llevar ningún "top" heredado: si lo
+     conserva, la hoja arranca pegada al header en vez de cubrir toda la pantalla
+     desde abajo, y por eso el buscador y el texto "Punto de venta / Caja" se ven
+     enredados encima del panel al abrirlo. */
+  #vista-caja .ticket{top:auto;}
   .ticket.ticket-abierto{transform:translateY(0); pointer-events:auto; visibility:visible;}
 
   /* Fondo oscuro detrás del ticket: oprimirlo también lo cierra */
