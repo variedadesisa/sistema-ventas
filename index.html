@@ -798,17 +798,22 @@ input:focus-visible, textarea:focus-visible{
 .caja-catalogo{display:flex; flex-direction:column; gap:0; overflow:hidden; flex-shrink:0; padding-top:12px;}
 
 /* El grid de productos se limita a 3 filas visibles con scroll interno,
-   para que el panel de articulos seleccionados siempre sea visible. */
-#gridProductosCaja{
-  overflow-y:auto;
-  height:240px;
-  scrollbar-width:thin;
-  scrollbar-color:var(--linea) transparent;
-  padding-right:4px;
+   para que el panel de articulos seleccionados siempre sea visible.
+   OJO: esto es exclusivo de escritorio (ver @media min-width:681px más
+   abajo). En móvil el grid debe mantener su alto natural, igual que
+   antes, para que sea la página entera la que haga scroll. */
+@media (min-width: 681px){
+  #gridProductosCaja{
+    overflow-y:auto;
+    height:240px;
+    scrollbar-width:thin;
+    scrollbar-color:var(--linea) transparent;
+    padding-right:4px;
+  }
+  #gridProductosCaja::-webkit-scrollbar{width:4px;}
+  #gridProductosCaja::-webkit-scrollbar-track{background:transparent;}
+  #gridProductosCaja::-webkit-scrollbar-thumb{background:var(--linea); border-radius:4px;}
 }
-#gridProductosCaja::-webkit-scrollbar{width:4px;}
-#gridProductosCaja::-webkit-scrollbar-track{background:transparent;}
-#gridProductosCaja::-webkit-scrollbar-thumb{background:var(--linea); border-radius:4px;}
 
 .caja-tabs{
   display:flex; gap:6px; padding:0 0 14px;
