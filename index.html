@@ -859,6 +859,79 @@ input:focus-visible, textarea:focus-visible{
 .caja-vacia p{font-size:15px; font-weight:600; margin:0; color:var(--texto);}
 .caja-vacia span{font-size:13px;}
 
+/* ---- PANEL PREVIEW ARTÍCULOS EN TICKET (solo desktop) ---- */
+.catalogo-preview-venta{
+  margin-top:20px;
+  border:1px solid var(--linea);
+  border-radius:var(--radio);
+  background:var(--papel-card);
+  overflow:hidden;
+}
+.cpv-titulo{
+  display:flex; align-items:center; gap:8px;
+  padding:12px 16px;
+  font-size:13px; font-weight:600; color:var(--texto-suave);
+  border-bottom:1px solid var(--linea);
+  background:var(--papel);
+  letter-spacing:.03em; text-transform:uppercase;
+}
+.cpv-titulo svg{width:15px; height:15px; flex-shrink:0; opacity:.7;}
+.cpv-lista{
+  display:flex; flex-direction:column;
+}
+.cpv-item{
+  display:flex; align-items:center; gap:14px;
+  padding:12px 16px;
+  border-bottom:1px solid var(--linea);
+  transition:background .1s;
+}
+.cpv-item:last-child{border-bottom:none;}
+.cpv-item:hover{background:var(--papel);}
+.cpv-item-img{
+  width:56px; height:56px; border-radius:8px;
+  background:var(--papel); border:1px solid var(--linea);
+  flex-shrink:0; overflow:hidden;
+  display:flex; align-items:center; justify-content:center;
+}
+.cpv-item-img img{width:100%; height:100%; object-fit:cover;}
+.cpv-item-img svg{width:22px; height:22px; stroke:var(--linea); fill:none; opacity:.6;}
+.cpv-item-info{flex:1; min-width:0; display:flex; flex-direction:column; gap:2px;}
+.cpv-item-nombre{
+  font-size:14px; font-weight:600; color:var(--texto);
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.cpv-item-desc{
+  font-size:12px; color:var(--texto-suave); line-height:1.4;
+  display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;
+}
+.cpv-item-meta{
+  display:flex; align-items:center; gap:6px; margin-top:2px;
+}
+.cpv-item-precio{
+  font-size:13px; font-weight:700; font-family:'JetBrains Mono',monospace;
+  color:var(--verde);
+}
+.cpv-item-qty-badge{
+  font-size:11px; background:var(--verde); color:#fff;
+  border-radius:20px; padding:1px 7px; font-weight:600;
+}
+.cpv-item-precio-orig{
+  font-size:11px; color:var(--texto-suave); text-decoration:line-through;
+  font-family:'JetBrains Mono',monospace;
+}
+.cpv-item-extra-tag{
+  font-size:10px; font-weight:700; color:var(--ambar);
+  background:var(--ambar-suave); border-radius:4px; padding:1px 6px;
+  text-transform:uppercase; letter-spacing:.04em;
+}
+
+/* En móvil/tablet el panel no existe visualmente */
+@media (max-width:980px){
+  .catalogo-preview-venta{display:none !important;}
+}
+
+
+
 /* =========================================================
    MODAL DETALLE DE CRÉDITO
    ========================================================= */
@@ -1188,6 +1261,13 @@ input:focus-visible, textarea:focus-visible{
         <div class="caja-catalogo">
           <div class="caja-tabs" id="cajaTabs"></div>
           <div class="grid-productos" id="gridProductosCaja"></div>
+          <div class="catalogo-preview-venta" id="catalogoPreviewVenta" style="display:none;">
+            <div class="cpv-titulo">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+              Artículos en el ticket
+            </div>
+            <div class="cpv-lista" id="cpvLista"></div>
+          </div>
         </div>
 
         <aside class="ticket" id="ticket">
@@ -2294,7 +2374,9 @@ function renderCaja(){
         PrecioVenta: precioVenta,
         PrecioOriginal: Number(producto.PrecioVenta),
         Cantidad: 1,
-        Stock: stockMax
+        Stock: stockMax,
+        ImagenURL: producto.ImagenURL || '',
+        Descripcion: producto.Descripcion || ''
       });
       renderTicket();
       if(window.innerWidth <= 680) abrirTicketMovil();
@@ -2443,6 +2525,59 @@ function agregarAlCarrito(id){
   if(window.innerWidth <= 680) abrirTicketMovil();
 }
 
+function renderPreviewVenta(){
+  const panel = $('catalogoPreviewVenta');
+  const lista = $('cpvLista');
+  if(!panel || !lista) return;
+
+  // Solo visible en desktop (980px+). El CSS también lo oculta,
+  // pero aquí controlamos display:none para evitar render innecesario.
+  if(window.innerWidth <= 980){
+    panel.style.display = 'none';
+    return;
+  }
+
+  if(ESTADO.carrito.length === 0){
+    panel.style.display = 'none';
+    return;
+  }
+
+  panel.style.display = 'block';
+
+  // Construir mapa de qty por lineaId para mostrar el badge
+  lista.innerHTML = ESTADO.carrito.map(item => {
+    const rebajado = item.PrecioOriginal && item.PrecioVenta !== item.PrecioOriginal;
+    const imgHTML = item.ImagenURL
+      ? `<img src="${escapeHtml(item.ImagenURL)}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
+        + `<svg viewBox="0 0 24 24" style="display:none"><rect x="3" y="3" width="18" height="18" rx="2" stroke-width="2" fill="none"/><circle cx="9" cy="9" r="2"/><path d="M21 15l-5-5L5 21" stroke-width="2" fill="none"/></svg>`
+      : `<svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" stroke-width="2" fill="none"/><circle cx="9" cy="9" r="2"/><path d="M21 15l-5-5L5 21" stroke-width="2" fill="none"/></svg>`;
+
+    const descHTML = item.esCargoExtra
+      ? `<span class="cpv-item-extra-tag">Cargo extra</span>`
+      : (item.Descripcion ? `<span class="cpv-item-desc">${escapeHtml(item.Descripcion)}</span>` : '');
+
+    const precioOrigHTML = rebajado
+      ? `<span class="cpv-item-precio-orig">${fmtMoneda(item.PrecioOriginal, ESTADO.moneda)}</span>`
+      : '';
+
+    const subtotal = item.PrecioVenta * item.Cantidad;
+
+    return `
+    <div class="cpv-item">
+      <div class="cpv-item-img">${imgHTML}</div>
+      <div class="cpv-item-info">
+        <span class="cpv-item-nombre">${escapeHtml(item.Nombre)}</span>
+        ${descHTML}
+        <div class="cpv-item-meta">
+          <span class="cpv-item-precio">${fmtMoneda(subtotal, ESTADO.moneda)}</span>
+          ${precioOrigHTML}
+          ${!item.esCargoExtra ? `<span class="cpv-item-qty-badge">×${item.Cantidad}</span>` : ''}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
 function renderTicket(){
   const cont = $('ticketItems');
   if(ESTADO.carrito.length === 0){
@@ -2507,6 +2642,7 @@ function renderTicket(){
 
   $('btnCobrar').disabled = ESTADO.carrito.length === 0;
   actualizarVuelto();
+  renderPreviewVenta();
 
   cont.querySelectorAll('.ticket-item').forEach(row=>{
     const lineaId = Number(row.dataset.linea);
