@@ -793,6 +793,20 @@ input:focus-visible, textarea:focus-visible{
 
 /* ---- CAJA: TABS DE CATEGORÍAS ---- */
 .caja-catalogo{display:flex; flex-direction:column; gap:0; overflow:hidden; flex:1; padding-top:12px;}
+
+/* El grid de productos se limita a 3 filas visibles con scroll interno,
+   para que el panel de articulos seleccionados siempre sea visible. */
+#gridProductosCaja{
+  overflow-y:auto;
+  max-height:558px;
+  scrollbar-width:thin;
+  scrollbar-color:var(--linea) transparent;
+  padding-right:4px;
+}
+#gridProductosCaja::-webkit-scrollbar{width:4px;}
+#gridProductosCaja::-webkit-scrollbar-track{background:transparent;}
+#gridProductosCaja::-webkit-scrollbar-thumb{background:var(--linea); border-radius:4px;}
+
 .caja-tabs{
   display:flex; gap:6px; padding:0 0 14px;
   overflow-x:auto; flex-shrink:0;
