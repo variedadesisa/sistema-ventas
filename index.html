@@ -169,7 +169,7 @@ h1,h2,h3{font-family:'Sora', system-ui, sans-serif; margin:0; letter-spacing:-0.
 .caja-layout{display:grid; grid-template-columns:1fr 340px; gap:24px; align-items:start; position:relative;}
 /* La columna izquierda es un flex vertical con altura fija al viewport.
    El catálogo (1 fila) queda arriba y el panel siempre abajo, sin moverse. */
-.caja-col-izq{display:flex; flex-direction:column; gap:16px; position:sticky; top:var(--caja-header-h,96px); max-height:calc(100vh - var(--caja-header-h,96px) - 32px);}
+.caja-col-izq{display:flex; flex-direction:column; gap:16px; position:sticky; top:var(--caja-header-h,96px); max-height:calc(100vh - var(--caja-header-h,96px) - 32px); min-width:0;}
 .caja-catalogo{flex-shrink:0;}
 #ticket{align-self:start;}
 
