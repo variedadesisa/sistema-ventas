@@ -166,7 +166,11 @@ h1,h2,h3{font-family:'Sora', system-ui, sans-serif; margin:0; letter-spacing:-0.
 .btn-limpiar-buscador:hover{background:var(--papel); color:var(--coral);}
 
 /* ---------- CAJA ---------- */
-.caja-layout{display:grid; grid-template-columns:1fr 340px; gap:24px; align-items:start; position:relative;}
+.caja-layout{display:grid; grid-template-columns:1fr 340px; grid-template-rows:auto auto; gap:24px; align-items:start; position:relative;}
+.caja-catalogo{grid-column:1; grid-row:1;}
+.catalogo-preview-venta{grid-column:1; grid-row:2;}
+#ticket{grid-column:2; grid-row:1 / span 2; align-self:start;}
+
 
 .grid-productos{
   display:flex; flex-direction:column; gap:0;
@@ -1261,13 +1265,14 @@ input:focus-visible, textarea:focus-visible{
         <div class="caja-catalogo">
           <div class="caja-tabs" id="cajaTabs"></div>
           <div class="grid-productos" id="gridProductosCaja"></div>
-          <div class="catalogo-preview-venta" id="catalogoPreviewVenta" style="display:none;">
-            <div class="cpv-titulo">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
-              Artículos en el ticket
-            </div>
-            <div class="cpv-lista" id="cpvLista"></div>
+        </div>
+
+        <div class="catalogo-preview-venta" id="catalogoPreviewVenta" style="display:none;">
+          <div class="cpv-titulo">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+            Artículos en el ticket
           </div>
+          <div class="cpv-lista" id="cpvLista"></div>
         </div>
 
         <aside class="ticket" id="ticket">
