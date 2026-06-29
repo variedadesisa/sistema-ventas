@@ -166,10 +166,12 @@ h1,h2,h3{font-family:'Sora', system-ui, sans-serif; margin:0; letter-spacing:-0.
 .btn-limpiar-buscador:hover{background:var(--papel); color:var(--coral);}
 
 /* ---------- CAJA ---------- */
-.caja-layout{display:grid; grid-template-columns:1fr 340px; grid-template-rows:auto auto; gap:24px; align-items:start; position:relative;}
-.caja-catalogo{grid-column:1; grid-row:1;}
-.catalogo-preview-venta{grid-column:1; grid-row:2;}
-#ticket{grid-column:2; grid-row:1 / span 2; align-self:start;}
+.caja-layout{display:grid; grid-template-columns:1fr 340px; gap:24px; align-items:start; position:relative;}
+/* La columna izquierda es un flex vertical con altura fija al viewport.
+   El catálogo (1 fila) queda arriba y el panel siempre abajo, sin moverse. */
+.caja-col-izq{display:flex; flex-direction:column; gap:16px; position:sticky; top:var(--caja-header-h,96px); max-height:calc(100vh - var(--caja-header-h,96px) - 32px);}
+.caja-catalogo{flex-shrink:0;}
+#ticket{align-self:start;}
 
 
 .grid-productos{
@@ -610,6 +612,7 @@ h1,h2,h3{font-family:'Sora', system-ui, sans-serif; margin:0; letter-spacing:-0.
 */
 @media (max-width: 980px){
   .caja-layout{grid-template-columns:1fr;}
+  .caja-col-izq{position:static; max-height:none; height:auto;}
   .ticket{position:static; max-height:none;}
   .kpis{grid-template-columns:repeat(2,1fr);}
   .kpis-5{grid-template-columns:repeat(2,1fr);}
@@ -792,13 +795,13 @@ input:focus-visible, textarea:focus-visible{
 }
 
 /* ---- CAJA: TABS DE CATEGORÍAS ---- */
-.caja-catalogo{display:flex; flex-direction:column; gap:0; overflow:hidden; flex:1; padding-top:12px;}
+.caja-catalogo{display:flex; flex-direction:column; gap:0; overflow:hidden; flex-shrink:0; padding-top:12px;}
 
 /* El grid de productos se limita a 3 filas visibles con scroll interno,
    para que el panel de articulos seleccionados siempre sea visible. */
 #gridProductosCaja{
   overflow-y:auto;
-  max-height:190px;
+  max-height:220px;
   scrollbar-width:thin;
   scrollbar-color:var(--linea) transparent;
   padding-right:4px;
@@ -879,14 +882,15 @@ input:focus-visible, textarea:focus-visible{
 
 /* ---- PANEL PREVIEW ARTÍCULOS EN TICKET (solo desktop) ---- */
 .catalogo-preview-venta{
-  margin-top:20px;
+  margin-top:0;
   border:1px solid var(--linea);
   border-radius:var(--radio);
   background:var(--papel-card);
   overflow:hidden;
   display:flex;
   flex-direction:column;
-  max-height:calc(100vh - 300px);
+  flex:1;
+  min-height:0;
 }
 .cpv-titulo{
   display:flex; align-items:center; gap:8px;
@@ -1290,6 +1294,7 @@ input:focus-visible, textarea:focus-visible{
       </header>
 
       <div class="caja-layout">
+        <div class="caja-col-izq">
         <div class="caja-catalogo">
           <div class="caja-tabs" id="cajaTabs"></div>
           <div class="grid-productos" id="gridProductosCaja"></div>
@@ -1301,7 +1306,8 @@ input:focus-visible, textarea:focus-visible{
             Artículos en el ticket
           </div>
           <div class="cpv-lista" id="cpvLista"></div>
-        </div>
+          </div>
+        </div><!-- /caja-col-izq -->
 
         <aside class="ticket" id="ticket">
           <div class="ticket-manija-movil" id="ticketManijaMovil">
