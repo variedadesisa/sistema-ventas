@@ -798,7 +798,7 @@ input:focus-visible, textarea:focus-visible{
    para que el panel de articulos seleccionados siempre sea visible. */
 #gridProductosCaja{
   overflow-y:auto;
-  max-height:558px;
+  max-height:190px;
   scrollbar-width:thin;
   scrollbar-color:var(--linea) transparent;
   padding-right:4px;
@@ -884,6 +884,9 @@ input:focus-visible, textarea:focus-visible{
   border-radius:var(--radio);
   background:var(--papel-card);
   overflow:hidden;
+  display:flex;
+  flex-direction:column;
+  max-height:calc(100vh - 300px);
 }
 .cpv-titulo{
   display:flex; align-items:center; gap:8px;
@@ -892,10 +895,21 @@ input:focus-visible, textarea:focus-visible{
   border-bottom:1px solid var(--linea);
   background:var(--papel);
   letter-spacing:.03em; text-transform:uppercase;
+  flex-shrink:0;
 }
 .cpv-titulo svg{width:15px; height:15px; flex-shrink:0; opacity:.7;}
 .cpv-lista{
   display:flex; flex-direction:column;
+  overflow-y:auto;
+  scrollbar-width:thin;
+  scrollbar-color:var(--linea) transparent;
+}
+.cpv-lista::-webkit-scrollbar{width:4px;}
+.cpv-lista::-webkit-scrollbar-track{background:transparent;}
+.cpv-lista::-webkit-scrollbar-thumb{background:var(--linea); border-radius:4px;}
+.cpv-vacio{
+  color:var(--texto-suave); font-size:13px; text-align:center;
+  padding:20px 16px; font-style:italic;
 }
 .cpv-item{
   display:flex; align-items:center; gap:14px;
@@ -1281,7 +1295,7 @@ input:focus-visible, textarea:focus-visible{
           <div class="grid-productos" id="gridProductosCaja"></div>
         </div>
 
-        <div class="catalogo-preview-venta" id="catalogoPreviewVenta" style="display:none;">
+        <div class="catalogo-preview-venta" id="catalogoPreviewVenta">
           <div class="cpv-titulo">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
             Artículos en el ticket
@@ -2549,19 +2563,11 @@ function renderPreviewVenta(){
   const lista = $('cpvLista');
   if(!panel || !lista) return;
 
-  // Solo visible en desktop (980px+). El CSS también lo oculta,
-  // pero aquí controlamos display:none para evitar render innecesario.
-  if(window.innerWidth <= 980){
-    panel.style.display = 'none';
-    return;
-  }
-
+  // En móvil el CSS lo oculta; aquí no hacemos nada más.
   if(ESTADO.carrito.length === 0){
-    panel.style.display = 'none';
+    lista.innerHTML = '<p class="cpv-vacio">Agrega productos haciendo clic en ellos</p>';
     return;
   }
-
-  panel.style.display = 'block';
 
   // Construir mapa de qty por lineaId para mostrar el badge
   lista.innerHTML = ESTADO.carrito.map(item => {
